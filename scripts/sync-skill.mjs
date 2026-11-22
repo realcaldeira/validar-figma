@@ -1,12 +1,18 @@
-// Gera os scripts de navegador da skill validar-figma a partir do motor deste app (src/engine),
-// para que a skill (usada pelos agentes) e o app usem exatamente o mesmo código.
+// Instala a skill validar-figma a partir deste repositório: copia skill/validar-figma (SKILL.md, references, examples)
+// e gera os scripts de navegador e o medidor de terminal do motor do app (src/engine), para que a skill e o app
+// usem exatamente o mesmo código. Arquivos que só existem na pasta instalada (ex.: references/local.md) ficam.
 // Uso: npm run sync-skill   (pasta da skill: VALIDAR_FIGMA_SKILL ou ~/.agents/skills/validar-figma)
-import { chmod, copyFile, mkdir, writeFile } from 'node:fs/promises';
+import { chmod, copyFile, cp, mkdir, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { buildCaptureBundle, buildValidatorBundle } from '../server/scripts.ts';
 
 const skillDir = process.env.VALIDAR_FIGMA_SKILL || path.join(os.homedir(), '.agents', 'skills', 'validar-figma');
+const source = fileURLToPath(new URL('../skill/validar-figma/', import.meta.url));
+await mkdir(skillDir, { recursive: true });
+await cp(source, skillDir, { recursive: true });
+
 const outDir = path.join(skillDir, 'browser');
 await mkdir(outDir, { recursive: true });
 
@@ -23,5 +29,5 @@ await mkdir(binDir, { recursive: true });
 await copyFile(new URL('./skill-cli.mjs', import.meta.url), path.join(binDir, 'validar.mjs'));
 await chmod(path.join(binDir, 'validar.mjs'), 0o755);
 
-console.log(`Skill atualizada em ${outDir}`);
+console.log(`Skill instalada em ${skillDir}`);
 console.log(`  validator.js ${(validator.length / 1024).toFixed(1)} KB · capture.js ${(capture.length / 1024).toFixed(1)} KB`);

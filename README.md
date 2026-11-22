@@ -88,15 +88,25 @@ Open `http://localhost:5199`.
 | `src/demo/` | Built-in demo screen (`/demo/sample-screen`) and Figma SVG reference |
 | `server/` | Vite middleware serving `/validator.js`, `/capture.js`, `/api/proxy`, `/api/figma/fetch`, `/api/reports`, `/api/sessions`, `/api/validate/run`, `/api/browser/login` and `/api/benchmark/*` |
 
-## Agent skill sync
+## Agent skill
 
-The `validar-figma` agent skill (used by Claude Code, Codex and Gemini/Antigravity, in `~/.agents/skills/validar-figma`) ships the same browser scripts as this app. After changing anything in `src/engine/`, regenerate them:
+The `validar-figma` agent skill lives in [`skill/validar-figma/`](skill/validar-figma) (`SKILL.md`, `references/`, `examples/`). It is the same for Claude Code, Codex and Gemini/Antigravity, and ships the same browser scripts as this app. Install it once after cloning:
 
 ```sh
+npm ci
 npm run sync-skill
 ```
 
-It writes `browser/validator.js` and `browser/capture.js` into the skill folder (override with `VALIDAR_FIGMA_SKILL=/path/to/skill`).
+This copies `skill/validar-figma/` to `~/.agents/skills/validar-figma` (override with `VALIDAR_FIGMA_SKILL=/path/to/skill`) and generates `browser/validator.js`, `browser/capture.js` and `bin/validar.mjs` from `src/engine/` and `scripts/skill-cli.mjs`. Then link the folder where your agent looks for skills:
+
+```sh
+mkdir -p ~/.claude/skills ~/.codex/skills ~/.gemini/config/skills
+ln -s ~/.agents/skills/validar-figma ~/.claude/skills/validar-figma
+ln -s ~/.agents/skills/validar-figma ~/.codex/skills/validar-figma
+ln -s ~/.agents/skills/validar-figma ~/.gemini/config/skills/validar-figma
+```
+
+The agent also needs the Figma MCP server connected (see section 0 of `SKILL.md`). Run `npm run sync-skill` again after pulling or after changing `src/engine/` or `skill/validar-figma/`. Files that exist only in the installed folder are kept: put team-specific notes (known repos and their design systems) in `references/local.md` there.
 
 ## Tests & Checks
 
