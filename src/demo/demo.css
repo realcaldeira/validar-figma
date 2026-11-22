@@ -1,0 +1,240 @@
+.demo-page {
+  background: #f4f6fb;
+  min-height: 100vh;
+  padding: 40px 0;
+  box-sizing: border-box;
+}
+
+.demo-card {
+  box-sizing: border-box;
+  width: 1120px;
+  margin: 0 auto;
+  min-height: 540px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: #ffffff;
+  border: 1px solid #dde3ee;
+  border-radius: 18px;
+}
+
+.demo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 56px;
+}
+
+.demo-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.demo-title {
+  margin: 0;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.25;
+  color: #111827;
+}
+
+.demo-subtitle {
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #5b6475;
+}
+
+.demo-cta {
+  box-sizing: border-box;
+  width: 132px;
+  height: 38px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 10px;
+  background: #4f46e5;
+  color: #ffffff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.demo-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.demo-search {
+  box-sizing: border-box;
+  width: 360px;
+  height: 38px;
+  padding: 0 14px 0 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Ccircle cx='7' cy='7' r='5'/%3E%3Cpath d='m11 11 3 3'/%3E%3C/svg%3E")
+    no-repeat 12px center;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #111827;
+}
+
+.demo-table-frame {
+  box-sizing: border-box;
+  border: 1px solid #dde3ee;
+  border-radius: 12px;
+  overflow: clip;
+}
+
+.demo-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #111827;
+}
+
+.demo-table thead tr {
+  background: #eef2ff;
+  height: 44px;
+}
+
+.demo-table th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  color: #334155;
+  padding: 0 16px;
+}
+
+.demo-table td {
+  height: 48px;
+  padding: 8px 16px;
+  box-sizing: border-box;
+  border-top: 1px solid #e2e8f0;
+}
+
+.demo-release-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.demo-owner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.demo-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.demo-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.demo-chip.is-review {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.demo-ver {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #475569;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.demo-pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.demo-mismatch .demo-card {
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.demo-mismatch .demo-title {
+  font-size: 20px;
+}
+
+.demo-mismatch .demo-subtitle {
+  color: #94a3b8;
+}
+
+.demo-mismatch .demo-cta {
+  background: #2563eb;
+  border-radius: 4px;
+}
+
+.demo-mismatch .demo-table thead tr {
+  background: #dbeafe;
+}
+
+.demo-mismatch .demo-chip {
+  border-radius: 4px;
+}
+
+.demo-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.demo-extra-btn {
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 14px;
+  color: #111827;
+}

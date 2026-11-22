@@ -1,0 +1,409 @@
+/* Tela "O que faz e o que não faz" */
+.cap-page {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.cap-hero {
+  background-color: var(--figma-dark);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+  color: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 26px 26px 20px;
+  box-shadow: var(--shadow-md);
+}
+
+.cap-hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.cap-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 9px;
+  border-radius: 5px;
+  background: rgba(13, 153, 255, 0.16);
+  border: 1px solid rgba(13, 153, 255, 0.36);
+  color: #8acbff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.app .cap-hero h1,
+.cap-hero h1 {
+  color: #ffffff;
+  margin: 0 0 8px;
+}
+
+.cap-hero .lead {
+  margin: 0;
+  max-width: 70ch;
+  color: #b5b5ad;
+}
+
+.cap-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.cap-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.07);
+  color: #e4e4df;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 6px 13px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.16s, border-color 0.16s, color 0.16s, transform 0.12s var(--ease-out);
+}
+
+.cap-filter-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.cap-filter-btn.tone-yes.active .cap-filter-count {
+  background: rgba(11, 36, 25, 0.18);
+}
+
+.cap-filter-btn:hover {
+  border-color: rgba(255, 255, 255, 0.36);
+  background: rgba(255, 255, 255, 0.13);
+  color: #ffffff;
+}
+
+.cap-filter-btn:active {
+  transform: scale(0.96);
+}
+
+.cap-filter-btn.tone-all.active {
+  background: var(--figma-blue);
+  border-color: var(--figma-blue);
+  color: #ffffff;
+}
+
+.cap-filter-btn.tone-yes.active {
+  background: var(--figma-green);
+  border-color: var(--figma-green);
+  color: #0b2419;
+}
+
+.cap-filter-btn.tone-no.active {
+  background: var(--figma-red);
+  border-color: var(--figma-red);
+  color: #ffffff;
+}
+
+.cap-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.cap-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: 18px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.18s var(--ease-out), box-shadow 0.2s var(--ease-out), border-color 0.16s ease;
+}
+
+.cap-card.tone-blue { border-top-color: var(--figma-blue); }
+.cap-card.tone-green { border-top-color: var(--figma-green); }
+.cap-card.tone-coral { border-top-color: var(--figma-red); }
+.cap-card.tone-purple { border-top-color: var(--figma-purple); }
+
+.cap-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.cap-card.recommended {
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-ring), var(--shadow-card);
+}
+
+.cap-corner {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background: #ffffff;
+  border: 1.5px solid var(--figma-blue);
+  pointer-events: none;
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.cap-corner.tl { top: -4px; left: -4px; }
+.cap-corner.tr { top: -4px; right: -4px; }
+.cap-corner.bl { bottom: -4px; left: -4px; }
+.cap-corner.br { bottom: -4px; right: -4px; }
+
+.cap-card.recommended:hover .cap-corner {
+  transform: scale(1.25);
+}
+
+.cap-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cap-card-title-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cap-card-index {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--surface-subtle);
+  padding: 2px 6px;
+  border-radius: 5px;
+  transition: transform 0.2s var(--ease-spring), color 0.16s ease, background 0.16s ease;
+}
+
+.cap-card:hover .cap-card-index {
+  transform: scale(1.1);
+  color: var(--ink);
+}
+
+.cap-card-head h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.cap-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cap-needs {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.cap-needs strong {
+  color: var(--ink-secondary);
+}
+
+.cap-group {
+  border-radius: 9px;
+  transition: opacity 0.2s ease, background 0.2s ease, padding 0.2s ease;
+}
+
+.cap-group.is-focused {
+  background: var(--surface-elevated);
+  padding: 6px 10px 10px;
+}
+
+.cap-group.is-dimmed {
+  opacity: 0.34;
+}
+
+.cap-sub {
+  margin: 6px 0 4px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cap-sub.yes {
+  color: var(--success);
+}
+
+.cap-sub.no {
+  color: var(--danger);
+}
+
+.cap-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cap-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--ink-secondary);
+  transition: transform 0.16s var(--ease-out);
+}
+
+.cap-list li:hover {
+  transform: translateX(3px);
+}
+
+.cap-mark {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.cap-list li:hover .cap-mark {
+  transform: scale(1.16);
+}
+
+.cap-list.yes .cap-mark {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.cap-list.no .cap-mark {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.cap-all,
+.cap-read {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: 18px 20px;
+}
+
+.cap-all-head h2,
+.cap-read h2 {
+  margin: 0 0 4px;
+  font-size: 17px;
+}
+
+.cap-all-head p {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.cap-all-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.cap-all-panel {
+  border-radius: 10px;
+  padding: 12px 15px 14px;
+  border: 1px solid var(--border);
+  transition: opacity 0.2s ease, transform 0.18s var(--ease-out);
+}
+
+.cap-all-panel.yes {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+}
+
+.cap-all-panel.no {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+}
+
+.cap-all-panel.is-dimmed {
+  opacity: 0.34;
+}
+
+.cap-read-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.cap-read-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-left: 3.5px solid var(--border-strong);
+  background: var(--surface-elevated);
+  font-size: 13.5px;
+  color: var(--ink-secondary);
+  line-height: 1.45;
+  transition: transform 0.16s var(--ease-out), box-shadow 0.16s ease;
+}
+
+.cap-read-item.fail {
+  border-left-color: var(--figma-red);
+}
+
+.cap-read-item.warn {
+  border-left-color: var(--warning-vivid);
+}
+
+.cap-read-item.pass {
+  border-left-color: var(--figma-green);
+}
+
+.cap-read-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 860px) {
+  .cap-grid,
+  .cap-all-cols,
+  .cap-read-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Assertividade medida */
+.cap-acc-scroll { overflow-x: auto; }
+.cap-acc-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.cap-acc-table th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.cap-acc-table td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--ink-secondary); line-height: 1.45; }
+.cap-acc-table .badge { white-space: normal; text-align: left; line-height: 1.4; }
+.cap-acc-name { font-weight: 600; color: var(--ink); width: 30%; }
+.cap-acc-src { color: var(--muted); font-size: 12.5px; width: 28%; }
+.cap-acc-note { margin: 12px 0 0; font-size: 13.5px; color: var(--ink-secondary); }

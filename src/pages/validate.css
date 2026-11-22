@@ -1,0 +1,1510 @@
+.val-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.38fr) minmax(280px, 0.85fr);
+  gap: 28px;
+  align-items: center;
+  margin-bottom: 26px;
+}
+
+.val-hero {
+  min-width: 0;
+}
+
+/* Rótulo editorial de Frame no Figma */
+.val-frame-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--purple);
+  margin-bottom: 10px;
+}
+
+.val-triad {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.val-triad span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  animation: triadWave 2.8s ease-in-out infinite;
+}
+
+.val-triad span:nth-child(2) {
+  animation-delay: 0.35s;
+}
+
+.val-triad span:nth-child(3) {
+  animation-delay: 0.7s;
+}
+
+/* Seleção estilo Figma envolvendo a palavra "Figma" no H1 */
+.figma-word-box {
+  position: relative;
+  display: inline-block;
+  padding: 0 7px 1px;
+  margin: 0 2px;
+  border: 1.5px solid var(--figma-blue);
+  background: rgba(13, 153, 255, 0.08);
+  border-radius: 2px;
+  animation: figmaSelectIn 0.45s var(--ease-spring) 0.14s both;
+  transition: background 0.16s ease, box-shadow 0.18s ease;
+}
+
+.figma-word-box::after {
+  content: 'FRAME';
+  position: absolute;
+  top: -17px;
+  right: -1.5px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--figma-blue);
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.3;
+  opacity: 0;
+  transform: translateY(3px);
+  pointer-events: none;
+  transition: opacity 0.16s ease, transform 0.2s var(--ease-out);
+}
+
+.figma-word-box:hover {
+  background: rgba(13, 153, 255, 0.15);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.figma-word-box:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.figma-word-handle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #ffffff;
+  border: 1.5px solid var(--figma-blue);
+  transition: transform 0.2s var(--ease-spring), background 0.16s ease;
+}
+
+.figma-word-box:hover .figma-word-handle {
+  transform: scale(1.28);
+  background: var(--figma-blue);
+}
+
+.figma-word-handle.tl { top: -3.5px; left: -3.5px; }
+.figma-word-handle.tr { top: -3.5px; right: -3.5px; }
+.figma-word-handle.bl { bottom: -3.5px; left: -3.5px; }
+.figma-word-handle.br { bottom: -3.5px; right: -3.5px; }
+
+/* Régua arquitetônica de 3 passos (sem caixas repetitivas) */
+.hero-ruler {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--border-strong);
+  border-bottom: 1px solid var(--border-strong);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.hero-ruler-item {
+  position: relative;
+  padding: 11px 14px 11px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  transition: background 0.18s ease, padding-left 0.2s var(--ease-out);
+}
+
+.hero-ruler-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 22%;
+  bottom: 22%;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--figma-blue);
+  opacity: 0;
+  transform: scaleY(0.4);
+  transition: opacity 0.18s ease, transform 0.22s var(--ease-out);
+}
+
+.hero-ruler-item:hover {
+  background: rgba(255, 255, 255, 0.72);
+  padding-left: 10px;
+}
+
+.hero-ruler-item:hover::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.hero-ruler-item + .hero-ruler-item {
+  padding-left: 14px;
+  border-left: 1px solid var(--border);
+}
+
+.hero-ruler-num {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--figma-blue);
+  padding-top: 2px;
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.hero-ruler-item:hover .hero-ruler-num {
+  transform: scale(1.16);
+}
+
+.hero-ruler-copy strong {
+  display: block;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.hero-ruler-copy span {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.38;
+}
+
+/* Cena ilustrativa de Artboard Figma com Redlines & Cursor do Lucas */
+.figma-artboard-scene {
+  position: relative;
+  padding: 20px 14px 26px 26px;
+  perspective: 900px;
+}
+
+.figma-redline-y {
+  position: absolute;
+  left: 6px;
+  top: 46px;
+  bottom: 52px;
+  width: 1px;
+  background: var(--figma-red);
+  display: flex;
+  align-items: center;
+}
+
+.figma-redline-y::before,
+.figma-redline-y::after {
+  content: '';
+  position: absolute;
+  left: -3px;
+  width: 7px;
+  height: 1px;
+  background: var(--figma-red);
+}
+
+.figma-redline-y::before { top: 0; }
+.figma-redline-y::after { bottom: 0; }
+
+.figma-redline-tag {
+  position: absolute;
+  left: -6px;
+  transform: translateX(-45%);
+  background: var(--figma-red);
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 3px;
+  animation: redlinePop 0.2s var(--ease-spring);
+}
+
+@keyframes redlinePop {
+  from {
+    opacity: 0.5;
+    transform: translateX(-45%) scale(0.84);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-45%) scale(1);
+  }
+}
+
+.figma-preview-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--purple);
+  margin-bottom: 6px;
+}
+
+.figma-float-chip {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--figma-dark);
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  pointer-events: none;
+  animation: badgePop 0.24s var(--ease-spring), floatChip 3.6s ease-in-out infinite;
+}
+
+.figma-float-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--figma-purple);
+}
+
+.figma-float-chip.ok .figma-float-dot {
+  background: var(--figma-green);
+}
+
+.figma-float-chip.diff .figma-float-dot {
+  background: var(--figma-red);
+}
+
+.figma-frame-box {
+  position: relative;
+  background: #ffffff;
+  border: 1.5px solid var(--figma-blue);
+  border-radius: 2px;
+  padding: 15px 14px 18px;
+  box-shadow: 0 12px 26px -14px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: box-shadow 0.22s var(--ease-out), transform 0.22s var(--ease-out);
+}
+
+.figma-scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--figma-blue), var(--figma-purple), transparent);
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 2;
+  animation: scanSweep 4.2s var(--ease-out) infinite;
+}
+
+.figma-artboard-scene:hover .figma-frame-box,
+.figma-frame-box.is-active {
+  box-shadow: 0 0 0 2px var(--accent-ring), 0 16px 32px -14px rgba(0, 0, 0, 0.28);
+}
+
+.figma-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #ffffff;
+  border: 1.5px solid var(--figma-blue);
+  transition: transform 0.2s var(--ease-spring), background 0.16s ease;
+}
+
+.figma-artboard-scene:hover .figma-handle,
+.figma-frame-box.is-active .figma-handle {
+  transform: scale(1.2);
+}
+
+.figma-handle.tl { top: -4.5px; left: -4.5px; }
+.figma-handle.tr { top: -4.5px; right: -4.5px; }
+.figma-handle.bl { bottom: -4.5px; left: -4.5px; }
+.figma-handle.br { bottom: -4.5px; right: -4.5px; }
+
+.figma-skel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.figma-skel-bar {
+  height: 8px;
+  border-radius: 3px;
+  background: #e4e4df;
+}
+
+.figma-preview-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.16s var(--ease-out), box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.figma-preview-row:hover {
+  transform: translateX(2px);
+}
+
+.figma-preview-row.is-inspected {
+  border-color: var(--figma-blue);
+  box-shadow: 0 0 0 2px var(--accent-ring);
+  transform: translateX(2px);
+}
+
+.figma-preview-row.ok {
+  background: var(--success-bg);
+  border: 1px solid var(--success-border);
+  color: var(--success);
+}
+
+.figma-preview-row.diff {
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: var(--danger);
+}
+
+.figma-preview-swatches {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.figma-mini-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+}
+
+.figma-dim-pill {
+  position: absolute;
+  left: 50%;
+  bottom: -12px;
+  transform: translateX(-50%);
+  background: var(--figma-blue);
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  animation: dimPop 0.22s var(--ease-spring);
+}
+
+@keyframes dimPop {
+  from {
+    opacity: 0.5;
+    transform: translateX(-50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* Validação rápida */
+.figma-cursor {
+  position: absolute;
+  left: calc(100% - 64px);
+  top: calc(100% - 28px);
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 2px;
+  pointer-events: none;
+  z-index: 4;
+  animation: cursorIdle 3.8s ease-in-out infinite;
+  transition:
+    left 0.45s var(--ease-out),
+    top 0.45s var(--ease-out),
+    transform 0.22s var(--ease-out);
+}
+
+.figma-cursor.pos-ok {
+  left: 62%;
+  top: 46%;
+  animation: none;
+}
+
+.figma-cursor.pos-diff {
+  left: 56%;
+  top: 66%;
+  animation: none;
+}
+
+.figma-cursor.tracking {
+  animation: none;
+  transition:
+    left 0.14s var(--ease-out),
+    top 0.14s var(--ease-out),
+    transform 0.18s var(--ease-out);
+  transform: scale(1.04);
+}
+
+.figma-cursor-pill {
+  margin-top: 12px;
+  background: var(--figma-purple);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(162, 89, 255, 0.35);
+}
+
+/* Janela do Studio Workbench (Validação rápida) */
+.quick-card {
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.06), 0 18px 40px -22px rgba(0, 0, 0, 0.22);
+  margin-bottom: 18px;
+}
+
+.quick-window-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--figma-dark);
+  color: #ffffff;
+  padding: 11px 20px;
+}
+
+.quick-window-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.quick-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quick-dots span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.quick-window-bar:hover .quick-dots span:nth-child(1) { transform: scale(1.18); transition-delay: 0ms; }
+.quick-window-bar:hover .quick-dots span:nth-child(2) { transform: scale(1.18); transition-delay: 45ms; }
+.quick-window-bar:hover .quick-dots span:nth-child(3) { transform: scale(1.18); transition-delay: 90ms; }
+
+.quick-window-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.quick-live-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: #a7f3d0;
+  background: rgba(10, 207, 131, 0.14);
+  border: 1px solid rgba(10, 207, 131, 0.32);
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+
+.quick-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--figma-green);
+  animation: liveDotPulse 2.2s ease-out infinite;
+}
+
+.quick-spec-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: #a1a19a;
+  letter-spacing: 0.05em;
+  transition: color 0.18s ease;
+}
+
+.quick-window-bar.is-running .quick-spec-tag {
+  color: #7dd3fc;
+  animation: dot-pulse 1.2s ease-in-out infinite;
+}
+
+.quick-body {
+  padding: 22px 24px 24px;
+}
+
+.quick-sub {
+  color: var(--muted);
+  font-size: 14.5px;
+  margin: 0 0 18px;
+  max-width: 74ch;
+}
+
+.quick-fields {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.quick-fields-bridge {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  pointer-events: none;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quick-fields-bridge.ready {
+  background: var(--figma-green);
+  border-color: var(--figma-green);
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(10, 207, 131, 0.22), var(--shadow-sm);
+  animation: bridgeReady 0.34s var(--ease-spring);
+}
+
+.quick-step-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  transition: border-color 0.16s, box-shadow 0.16s, background 0.16s;
+}
+
+.quick-step-field.is-valid {
+  border-color: var(--success-border);
+  background: #f4fbf7;
+}
+
+.quick-step-field.is-warn {
+  border-color: var(--warning-border);
+  background: #fffcf3;
+}
+
+.quick-step-field:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.input-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--muted);
+  display: inline-flex;
+  pointer-events: none;
+}
+
+.input-icon-wrap .input {
+  padding-left: 38px;
+}
+
+.input-icon-wrap.has-valid .input {
+  padding-right: 36px;
+}
+
+.input-valid-icon {
+  position: absolute;
+  right: 11px;
+  color: var(--figma-green);
+  display: inline-flex;
+  pointer-events: none;
+  animation: badgePop 0.26s var(--ease-spring);
+}
+
+.field-tip-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-height: 20px;
+}
+
+.quick-hint {
+  font-size: 12.5px;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.quick-hint.ok {
+  color: var(--success);
+  font-weight: 500;
+  animation: badgePop 0.24s var(--ease-spring);
+}
+
+.quick-hint.warn {
+  color: var(--warning);
+}
+
+.quick-feedback-pop.error {
+  animation: fieldShake 0.36s var(--ease-out);
+}
+
+.quick-feedback-pop.ok {
+  animation: fadeSlideUp 0.22s var(--ease-out);
+}
+
+.quick-token-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-radius: 9px;
+  background: var(--success-bg);
+  border: 1px solid var(--success-border);
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--success);
+}
+
+.quick-token-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.quick-token-hint {
+  font-weight: 400;
+  color: var(--ink-secondary);
+}
+
+.quick-token-edit {
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.quick-token-edit .field-group {
+  margin-bottom: 8px;
+}
+
+.token-help-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: var(--accent-hover);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.token-help-toggle:hover {
+  text-decoration: underline;
+}
+
+.token-help-box {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 9px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  animation: fadeSlideUp 0.16s ease-out;
+}
+
+.token-help-steps {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  color: var(--ink-secondary);
+}
+
+.token-help-steps li + li {
+  margin-top: 4px;
+}
+
+.quick-options-panel {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quick-precision-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.quick-precision-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.quick-precision-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.quick-precision-explain {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.quick-finetune-drawer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-radius: 9px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  animation: fadeSlideUp 0.16s ease-out;
+}
+
+.quick-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.quick-login-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  flex: 1;
+  min-width: 280px;
+}
+
+.quick-login-copy {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.quick-login-copy strong {
+  color: var(--ink);
+  display: block;
+}
+
+.quick-progress {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  animation: fadeSlideUp 0.18s ease-out;
+}
+
+.quick-progress-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.quick-progress-step {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.quick-progress-step.active {
+  color: var(--accent-hover);
+  font-weight: 600;
+}
+
+.quick-progress-step.done {
+  color: var(--success);
+  font-weight: 500;
+}
+
+.quick-progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent-hover);
+}
+
+.quick-progress-head .roll-num {
+  font-family: var(--font-mono);
+}
+
+.link-btn {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--accent-hover);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.link-btn:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.link-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Demo Showcase Strip */
+/* Faixa escura de Demo */
+.val-demo-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  background-color: var(--figma-dark);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+  color: #ffffff;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 34px;
+  box-shadow: var(--shadow-sm);
+}
+
+.val-demo-copy strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: #ffffff;
+}
+
+.val-demo-copy span {
+  display: block;
+  font-size: 13px;
+  color: #a8a8a0;
+}
+
+.val-demo-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.demo-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 13px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.16s, background 0.16s, transform 0.16s var(--ease-out), box-shadow 0.16s;
+}
+
+.demo-action-btn svg {
+  transition: transform 0.18s var(--ease-out);
+}
+
+.demo-action-btn:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.22);
+}
+
+.demo-action-btn.demo-pass:hover:not(:disabled) {
+  border-color: rgba(10, 207, 131, 0.65);
+  box-shadow: 0 8px 18px -6px rgba(10, 207, 131, 0.35);
+}
+
+.demo-action-btn.demo-warn:hover:not(:disabled) {
+  border-color: rgba(242, 78, 30, 0.65);
+  box-shadow: 0 8px 18px -6px rgba(242, 78, 30, 0.35);
+}
+
+.demo-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex: none;
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s ease;
+}
+
+.demo-action-btn.demo-pass:hover:not(:disabled) .demo-dot {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(10, 207, 131, 0.25);
+}
+
+.demo-action-btn.demo-warn:hover:not(:disabled) .demo-dot {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(242, 78, 30, 0.25);
+}
+
+.demo-action-btn:hover:not(:disabled) svg {
+  transform: translateX(2px);
+}
+
+.demo-action-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.demo-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.demo-dot.pass {
+  background: var(--figma-green);
+}
+
+.demo-dot.warn {
+  background: var(--figma-red);
+}
+
+.demo-action-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.demo-action-text strong {
+  font-size: 13px;
+  color: #ffffff;
+}
+
+.demo-action-text small {
+  font-size: 11.5px;
+  color: #a8a8a0;
+}
+
+/* Outras formas de validar */
+/* Outras formas de validar — Spec Cards arquitetônicos */
+.other-modes-head {
+  margin-bottom: 14px;
+}
+
+.other-modes-head h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+.other-modes-head p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.mode-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.mode-card {
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 18px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--border-strong);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: border-color 0.16s, box-shadow 0.2s var(--ease-out), transform 0.18s var(--ease-out);
+}
+
+.mode-card.tone-green { border-top-color: var(--figma-green); }
+.mode-card.tone-blue { border-top-color: var(--figma-blue); }
+.mode-card.tone-purple { border-top-color: var(--figma-purple); }
+
+.mode-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.mode-card:active {
+  transform: translateY(0) scale(0.992);
+}
+
+.mode-card.tone-green:hover { border-top-color: var(--figma-green); }
+.mode-card.tone-blue:hover { border-top-color: var(--figma-blue); }
+.mode-card.tone-purple:hover { border-top-color: var(--figma-purple); }
+
+.mode-card.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.mode-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.mode-card-index {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  transition: transform 0.2s var(--ease-spring), color 0.16s ease;
+}
+
+.mode-card:hover .mode-card-index {
+  transform: scale(1.12);
+  color: var(--ink);
+}
+
+.mode-card-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mode-card-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15.5px;
+  color: var(--ink);
+}
+
+.mode-card-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.48;
+  margin: 0;
+  flex: 1;
+}
+
+.mode-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink);
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.mode-workspace {
+  padding-top: 6px;
+  animation: fadeSlideUp 0.18s ease-out;
+}
+
+.mode-workspace-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.mode-intro-banner {
+  padding: 11px 15px;
+  border-radius: 9px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 13.5px;
+  color: var(--ink-secondary);
+  margin-bottom: 16px;
+}
+
+.mcp-steps-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.mcp-step-pill {
+  padding: 9px 12px;
+  border-radius: 9px;
+  background: var(--purple-bg);
+  border: 1px solid var(--purple-border);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--purple);
+}
+
+.precision-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-xs);
+}
+
+.precision-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 220px;
+}
+
+.precision-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.precision-slider {
+  width: 180px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.precision-presets {
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.precision-presets button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.14s, color 0.14s, box-shadow 0.14s;
+}
+
+.precision-presets button:hover {
+  color: var(--ink);
+}
+
+.precision-presets button.active {
+  background: var(--figma-dark);
+  color: #ffffff;
+}
+
+.dropzone {
+  position: relative;
+  border: 1.5px dashed var(--border-strong);
+  border-radius: 10px;
+  background: var(--surface-elevated);
+  padding: 28px 18px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: border-color 0.14s, background 0.14s;
+}
+
+.dropzone:hover,
+.dropzone.dragging {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.dropzone input[type='file'] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.dropzone-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s var(--ease-spring), border-color 0.16s, color 0.16s;
+}
+
+.dropzone:hover .dropzone-icon,
+.dropzone.dragging .dropzone-icon {
+  transform: translateY(-3px) scale(1.06);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.dropzone-hint {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--muted);
+  max-width: 340px;
+}
+
+.preview-box {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface-subtle);
+}
+
+.preview-img-wrap {
+  max-height: 220px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8e8e4;
+}
+
+.preview-img-wrap img {
+  max-width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  display: block;
+}
+
+.preview-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  font-size: 12.5px;
+}
+
+.segment-group {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 3px;
+  background: var(--surface-subtle);
+  margin-bottom: 14px;
+}
+
+.segment-group button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.14s, color 0.14s;
+}
+
+.segment-group button.active {
+  background: var(--figma-dark);
+  color: #ffffff;
+}
+
+.val-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.spec-details {
+  margin-top: 14px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.spec-details summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+  user-select: none;
+}
+
+.spec-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0 8px;
+}
+
+.checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--ink-secondary);
+  cursor: pointer;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: inline-block;
+  animation: dot-pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes dot-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@media (max-width: 940px) {
+  .val-hero-grid {
+    grid-template-columns: 1fr;
+  }
+  .figma-artboard-scene {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .mode-cards,
+  .hero-steps,
+  .hero-ruler,
+  .mcp-steps-strip {
+    grid-template-columns: 1fr;
+  }
+  .hero-ruler-item + .hero-ruler-item {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+}
+
+@media (max-width: 720px) {
+  .quick-body {
+    padding: 18px;
+  }
+  .quick-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .quick-fields-bridge {
+    display: none;
+  }
+  .quick-progress-steps {
+    grid-template-columns: 1fr;
+  }
+}
+.quick-project { max-width: 420px; margin-top: 4px; }
