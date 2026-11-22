@@ -2,6 +2,10 @@
 
 A local-first QA and developer workbench for validating any localhost screen against its official Figma design reference.
 
+![Figma Validator Demo](docs/demo.gif)
+
+> Full HD video (1440×860, 30 fps): [`docs/demo.mp4`](docs/demo.mp4)
+
 ## Key Features
 
 - **Figma is always the reference**: compare layout, typography, spacing, colors (CIEDE2000), radii, borders, shadows, text copy, and pixels against the Figma frame.
