@@ -17,6 +17,36 @@ A local-first QA and developer workbench for validating any localhost screen aga
 - **Developer productivity**: 1-click **Copy CSS fix** for failing properties, Markdown and JSON report exports, keyboard navigation (`↑`/`↓` or `j`/`k`, `Esc`), and an **EN / PT** interface language toggle.
 - **Assertiveness benchmark**: plant controlled CSS and text mutations into captured pages to measure validator detection accuracy and false-alarm rates.
 
+## Measured Accuracy
+
+Numbers from actual benchmark runs on **22 real screens** and controlled planted-error suites (also available inside the app on `/capabilities`).
+
+### Independent Judge Evaluation (`gemini-decision-1`)
+
+To measure real-world precision without manual bias, crops from **22 real screens** were evaluated independently by **Decision 1** (`gemini-decision-1`):
+
+| Check | Result | Method / Sample |
+|---|---|---|
+| **Figma × Screen component matching** | **429 / 429 (100%)** compared the exact same component · **0 false errors** from mismatched elements | Independent judge (`gemini-decision-1`) on crops of 22 real screens |
+| **Swapped-pair control (sanity check)** | **86% rejected** | Same judge tested against intentionally mismatched component pairs |
+| **Visible vs. CSS-only classification** | **98%** of visible errors stayed visible · only **6 / 249 (2%)** CSS-only tagged errors were perceptible by eye | Independent judge (`gemini-decision-1`) across **804 errors** from the 22 real screens |
+| **CSS-only share on real screens** | **28%** of total errors are CSS-only (real code diffs below visual thresholds, kept one click away) | Same 804-error dataset across 22 real screens |
+
+### Controlled Planted-Error Benchmarks
+
+| Analysis | Result | Source |
+|---|---|---|
+| **Spec-based comparison (inside spec)** | **31 / 31 caught · 0 false errors** (including 12 clean control copies) | 100 mutated copies of a captured screen |
+| **Quick validation — text (size, color, weight)** | **3 / 3 caught** | 19 planted errors against a real Figma frame |
+| **Quick validation — box (radius, border)** | **2 / 2 caught** | Same 19-error test |
+| **Quick validation — padding (left, top, bottom)** | **3 / 3 caught** | Same 19-error test |
+| **Quick validation — gap between elements** | **1 / 2 caught** (title → subtitle yes; header → table no) | Same 19-error test |
+| **Missing element / extra image / extra text** | **1 / 1**, **1 / 1**, **2 / 2** (reported as warnings) | Same 19-error test |
+| **Extra button, filter, or tab (Screen → Figma)** | **2 / 2 real (0 false)** on 22 real screens · **2 / 2** on demo · **1 / 1** (warning) in 19-error test | 22 real screens, demo (`?extra=1`), and 19-error test |
+| **False errors in quick validation** | **0 across all 19 cases** (120 false errors previously eliminated across the 22 real screens) | 19-error test + 22 real screens |
+
+> **Known trade-off:** Boxes whose sample copy differs from Figma (4 of the 19 planted cases — chips, headers, search inputs) intentionally become warnings instead of style errors to avoid false alarms. Overall in the 19-error quick-validation test: **9 errors**, **5 warnings**, **5 skipped** (4 sample-copy boxes + 1 header-to-table gap), and **0 false errors**.
+
 ## Quick validation (no AI)
 
 On the **Validate** page, paste the Figma frame link and the screen address, then click **Validate**. The app:
