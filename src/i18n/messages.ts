@@ -107,6 +107,11 @@ const PT_RULES: Rule[] = [
 
   // Validação rápida e Chrome do app
   [/^Missing screen URL$/, 'Falta o endereço da tela'],
+  [/^Missing sessionId$/, 'Falta o identificador da sessão'],
+  [/^Validation session not found or expired$/, 'Sessão de validação não encontrada ou expirada. Clique em abrir guia novamente.'],
+  [/^Validation is already running for this session$/, 'A medição já está em andamento para esta sessão'],
+  [/^The browser window was closed before measuring\. Click Validate screen to open it again\.$/, 'A janela do Chrome foi fechada antes da medição. Clique novamente para abrir a guia.'],
+  [/^The browser tab was closed before measuring\. Click Validate screen to open it again\.$/, 'A guia do Chrome foi fechada antes da medição. Clique novamente para abrir a guia.'],
   [/^Google Chrome not found \(set CHROME_PATH\)$/, 'Google Chrome não encontrado. Instale o Chrome ou defina CHROME_PATH.'],
   [/^Chrome closed right after starting \(is the app profile already open\?\)$/, 'O Chrome do app fechou logo ao abrir. Feche a janela do Chrome do app e tente de novo.'],
   [/^Chrome did not start in time$/, 'O Chrome do app demorou demais para abrir'],

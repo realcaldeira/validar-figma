@@ -354,7 +354,97 @@ export function openLoginWindow(url: string): Promise<void> {
   return run;
 }
 
-const DOM_QUIET_SCRIPT = `new Promise((resolve) => {
+interface TargetInfo {
+  targetId: string;
+  type: string;
+  url: string;
+}
+
+async function listPageTargets(cdp: Cdp): Promise<TargetInfo[]> {
+  const res = await cdp.send<{ targetInfos?: TargetInfo[] }>('Target.getTargets');
+  return (res.targetInfos ?? []).filter((t) => t.type === 'page');
+}
+
+/**
+ * Abre uma guia visível no Chrome do app (com o perfil `.chrome-profile`) na URL informada,
+ * para o usuário fazer login, passar por SSO ou preparar o estado antes da medição.
+ */
+export function openInteractiveTab(url: string): Promise<{ targetId: string }> {
+  const run = queue.then(async () => {
+    if (idleTimer) clearTimeout(idleTimer);
+    if (current?.headless) {
+      await closeBrowser(current);
+      current = null;
+    }
+    if (current) {
+      try {
+        const cdp = await Cdp.connect(current.wsUrl);
+        try {
+          const { targetId } = await cdp.send<{ targetId: string }>('Target.createTarget', { url });
+          await cdp.send('Target.activateTarget', { targetId }).catch(() => undefined);
+          return { targetId };
+        } finally {
+          cdp.close();
+        }
+      } catch {
+        current = null;
+      }
+    }
+    current = await launch(false, url);
+    const cdp = await Cdp.connect(current.wsUrl);
+    try {
+      let targetId: string | undefined;
+      const deadline = Date.now() + 5_000;
+      while (Date.now() < deadline) {
+        const pages = await listPageTargets(cdp);
+        const match = pages.find((p) => p.url && !p.url.startsWith('chrome://') && !p.url.startsWith('chrome-extension://')) ?? pages[0];
+        if (match?.targetId) {
+          targetId = match.targetId;
+          break;
+        }
+        await new Promise((r) => setTimeout(r, 100));
+      }
+      if (!targetId) {
+        ({ targetId } = await cdp.send<{ targetId: string }>('Target.createTarget', { url }));
+      }
+      await cdp.send('Target.activateTarget', { targetId }).catch(() => undefined);
+      return { targetId };
+    } finally {
+      cdp.close();
+    }
+  });
+  queue = run.catch(() => undefined);
+  return run;
+}
+
+/** Fecha uma guia interativa aberta antes da medição (ex.: quando o usuário cancela ou termina). */
+export function closeInteractiveTab(targetId: string): Promise<void> {
+  const run = queue.then(async () => {
+    const h = current;
+    if (!h || h.headless) return;
+    try {
+      const cdp = await Cdp.connect(h.wsUrl, 3_000);
+      try {
+        await cdp.send('Target.closeTarget', { targetId }).catch(() => undefined);
+        const remaining = await listPageTargets(cdp).catch(() => []);
+        if (remaining.length === 0) {
+          cdp.close();
+          current = null;
+          await closeBrowser(h);
+          return;
+        }
+      } finally {
+        cdp.close();
+      }
+    } catch {
+      /* janela já foi fechada pelo usuário */
+    }
+  });
+  queue = run.catch(() => undefined);
+  return run;
+}
+
+const DOM_QUIET_SCRIPT = (maxWaitMs: number) => `new Promise((resolve) => {
   let last = Date.now();
   const start = last;
   const obs = new MutationObserver(() => { last = Date.now(); });
@@ -362,7 +452,7 @@ const DOM_QUIET_SCRIPT = `new Promise((resolve) => {
   const busy = () => document.querySelector('[aria-busy="true"], [class*="skeleton" i], [class*="Skeleton"]');
   const tick = () => {
     const quiet = Date.now() - last > 800 && !busy();
-    if (quiet || Date.now() - start > 20000) { obs.disconnect(); resolve(true); } else setTimeout(tick, 150);
+    if (quiet || Date.now() - start > ${maxWaitMs}) { obs.disconnect(); resolve(true); } else setTimeout(tick, 150);
   };
   tick();
 })`;
@@ -383,11 +473,132 @@ export interface MeasureResult {
   finalUrl: string;
 }
 
+async function runMeasurementInSession(
+  s: (method: string, params?: Record<string, unknown>) => Promise<Record<string, unknown>>,
+  opts: MeasureOptions,
+  lap: (name: string) => void,
+  domMaxWaitMs: number,
+): Promise<Omit<MeasureResult, 'timings'>> {
+  // Espera a tela parar de mudar (dados chegando, reflow do viewport, esqueletos sumindo) e as fontes carregarem.
+  await s('Runtime.evaluate', { expression: DOM_QUIET_SCRIPT(domMaxWaitMs), awaitPromise: true });
+  await s('Runtime.evaluate', { expression: 'document.fonts ? document.fonts.ready.then(() => true) : true', awaitPromise: true });
+  await new Promise((r) => setTimeout(r, 150));
+  lap('settle');
+
+  const inject = await s('Runtime.evaluate', { expression: opts.validatorJs });
+  if (inject.exceptionDetails) throw new HttpError(500, 'Validator script failed to load in the page');
+  const evaluated = await s('Runtime.evaluate', {
+    expression: `window.__figmaValidator(${JSON.stringify(opts.spec)})`,
+    awaitPromise: true,
+    returnByValue: true,
+  });
+  if (evaluated.exceptionDetails) {
+    const details = evaluated.exceptionDetails as { exception?: { description?: string }; text?: string };
+    throw new HttpError(500, `Validator failed: ${details.exception?.description || details.text || 'unknown error'}`);
+  }
+  const report = (evaluated.result as { value?: MeasureResult['report'] }).value;
+  if (!report || !Array.isArray(report.regions)) throw new HttpError(500, 'Validator returned no report');
+  lap('measure');
+
+  const metrics = await s('Runtime.evaluate', {
+    expression: 'JSON.stringify({ h: Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0), url: location.href })',
+    returnByValue: true,
+  });
+  let finalUrl = opts.url;
+  try {
+    const rawMetrics = (metrics.result as { value?: string } | undefined)?.value;
+    if (rawMetrics) {
+      const parsed = JSON.parse(rawMetrics) as { h?: number; url?: string };
+      if (parsed.url) finalUrl = parsed.url;
+    }
+  } catch {
+    /* mantém opts.url */
+  }
+  // A captura tem exatamente o tamanho do frame do Figma, para comparar lado a lado na mesma escala.
+  const shot = await s('Page.captureScreenshot', {
+    format: 'png',
+    captureBeyondViewport: false,
+    clip: { x: 0, y: 0, width: opts.width, height: opts.height, scale: 1 },
+  });
+  lap('screenshot');
+  return { report, screenshotDataUrl: `data:image/png;base64,${String(shot.data)}`, finalUrl };
+}
+
 /** Abre a URL no Chrome do app, espera a tela assentar, mede com o validador e tira a captura. */
 export function measureScreen(opts: MeasureOptions): Promise<MeasureResult> {
   const run = queue.then(() => doMeasure(opts));
   queue = run.catch(() => undefined);
   return run;
+}
+
+/** Mede diretamente a guia visível aberta para o usuário (preservando login, cookies e estado da tela). */
+export function measureInteractiveTab(opts: MeasureOptions & { targetId: string }): Promise<MeasureResult> {
+  const run = queue.then(() => doMeasureInteractive(opts));
+  queue = run.catch(() => undefined);
+  return run;
+}
+
+async function doMeasureInteractive(opts: MeasureOptions & { targetId: string }): Promise<MeasureResult> {
+  if (idleTimer) clearTimeout(idleTimer);
+  const timings: Record<string, number> = {};
+  let mark = Date.now();
+  const lap = (name: string) => {
+    const now = Date.now();
+    timings[name] = now - mark;
+    mark = now;
+  };
+  const browser = current;
+  if (!browser || browser.headless) {
+    throw new HttpError(409, 'The browser window was closed before measuring. Click Validate screen to open it again.');
+  }
+  const cdp = await Cdp.connect(browser.wsUrl).catch(() => {
+    if (current === browser) current = null;
+    throw new HttpError(409, 'The browser window was closed before measuring. Click Validate screen to open it again.');
+  });
+  lap('chrome');
+
+  let resolvedTargetId: string | null = null;
+  let sessionId: string | null = null;
+  let shouldCloseBrowser = false;
+  try {
+    const pages = await listPageTargets(cdp);
+    const exact = pages.find((p) => p.targetId === opts.targetId);
+    const fallback = pages.find((p) => p.url && !p.url.startsWith('chrome://') && p.url !== 'about:blank');
+    const chosen = exact ?? (pages.length === 1 ? fallback : undefined);
+    if (!chosen) {
+      throw new HttpError(409, 'The browser tab was closed before measuring. Click Validate screen to open it again.');
+    }
+    resolvedTargetId = chosen.targetId;
+    ({ sessionId } = await cdp.send<{ sessionId: string }>('Target.attachToTarget', { targetId: resolvedTargetId, flatten: true }));
+    const s = (method: string, params: Record<string, unknown> = {}) => cdp.send(method, params, sessionId!);
+
+    await s('Page.enable');
+    await s('Runtime.enable');
+    await s('Emulation.setDeviceMetricsOverride', { width: opts.width, height: opts.height, deviceScaleFactor: 1, mobile: false });
+    // Garante dois frames para o layout reflowar na resolução exata do frame do Figma.
+    await s('Runtime.evaluate', {
+      expression: 'new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(true))))',
+      awaitPromise: true,
+    });
+    lap('resize');
+
+    const measured = await runMeasurementInSession(s, opts, lap, 6_000);
+    return { ...measured, timings };
+  } finally {
+    if (sessionId) {
+      await cdp.send('Emulation.clearDeviceMetricsOverride', {}, sessionId).catch(() => undefined);
+    }
+    if (resolvedTargetId) {
+      await cdp.send('Target.closeTarget', { targetId: resolvedTargetId }).catch(() => undefined);
+      const remaining = await listPageTargets(cdp).catch(() => []);
+      if (remaining.length === 0) shouldCloseBrowser = true;
+    }
+    cdp.close();
+    if (shouldCloseBrowser && current === browser) {
+      current = null;
+      await closeBrowser(browser).catch(() => undefined);
+    }
+  }
 }
 
 async function doMeasure(opts: MeasureOptions): Promise<MeasureResult> {
@@ -449,49 +660,9 @@ async function doMeasure(opts: MeasureOptions): Promise<MeasureResult> {
       await new Promise((r) => setTimeout(r, 150));
     }
     off();
-    // Depois da rede, espera a tela parar de mudar (dados chegando, esqueletos de carregamento sumindo).
-    await s('Runtime.evaluate', { expression: DOM_QUIET_SCRIPT, awaitPromise: true });
-    await s('Runtime.evaluate', { expression: 'document.fonts ? document.fonts.ready.then(() => true) : true', awaitPromise: true });
-    await new Promise((r) => setTimeout(r, 150));
-    lap('settle');
 
-    const inject = await s('Runtime.evaluate', { expression: opts.validatorJs });
-    if (inject.exceptionDetails) throw new HttpError(500, 'Validator script failed to load in the page');
-    const evaluated = await s('Runtime.evaluate', {
-      expression: `window.__figmaValidator(${JSON.stringify(opts.spec)})`,
-      awaitPromise: true,
-      returnByValue: true,
-    });
-    if (evaluated.exceptionDetails) {
-      const details = evaluated.exceptionDetails as { exception?: { description?: string }; text?: string };
-      throw new HttpError(500, `Validator failed: ${details.exception?.description || details.text || 'unknown error'}`);
-    }
-    const report = (evaluated.result as { value?: MeasureResult['report'] }).value;
-    if (!report || !Array.isArray(report.regions)) throw new HttpError(500, 'Validator returned no report');
-    lap('measure');
-
-    const metrics = await s('Runtime.evaluate', {
-      expression: 'JSON.stringify({ h: Math.max(document.documentElement.scrollHeight, document.body ? document.body.scrollHeight : 0), url: location.href })',
-      returnByValue: true,
-    });
-    let finalUrl = opts.url;
-    try {
-      const rawMetrics = (metrics.result as { value?: string } | undefined)?.value;
-      if (rawMetrics) {
-        const parsed = JSON.parse(rawMetrics) as { h?: number; url?: string };
-        if (parsed.url) finalUrl = parsed.url;
-      }
-    } catch {
-      /* mantém opts.url */
-    }
-    // A captura tem exatamente o tamanho do frame do Figma, para comparar lado a lado na mesma escala.
-    const shot = await s('Page.captureScreenshot', {
-      format: 'png',
-      captureBeyondViewport: false,
-      clip: { x: 0, y: 0, width: opts.width, height: opts.height, scale: 1 },
-    });
-    lap('screenshot');
-    return { report, screenshotDataUrl: `data:image/png;base64,${String(shot.data)}`, finalUrl, timings };
+    const measured = await runMeasurementInSession(s, opts, lap, 20_000);
+    return { ...measured, timings };
   } finally {
     if (targetId) await cdp.send('Target.closeTarget', { targetId }).catch(() => undefined);
     cdp.close();

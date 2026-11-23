@@ -25,6 +25,9 @@ describe('origem dos pedidos à API', () => {
     expect(isCrossOriginRoute('GET', '/api/reports')).toBe(false);
     expect(isCrossOriginRoute('DELETE', '/api/reports/20261121-000705-aaaa-x')).toBe(false);
     expect(isCrossOriginRoute('POST', '/api/validate/run')).toBe(false);
+    expect(isCrossOriginRoute('POST', '/api/validate/prepare')).toBe(false);
+    expect(isCrossOriginRoute('POST', '/api/validate/continue')).toBe(false);
+    expect(isCrossOriginRoute('POST', '/api/validate/cancel')).toBe(false);
     expect(isCrossOriginRoute('POST', '/api/browser/login')).toBe(false);
     expect(isCrossOriginRoute('GET', '/api/proxy')).toBe(false);
   });

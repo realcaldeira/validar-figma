@@ -49,13 +49,13 @@ To measure real-world precision without manual bias, crops from **22 real screen
 
 ## Quick validation (no AI)
 
-On the **Validate** page, paste the Figma frame link and the screen address, then click **Validate**. The app:
+On the **Validate** page, paste the Figma frame link and the screen address, then click **Open tab & validate**. By default, **Open browser tab before measuring (login / setup)** is enabled so you are never blocked by login walls or initial setup:
 
-1. fetches the frame from the Figma REST API (image + auto-generated spec) using your Personal Access Token, saved in the browser;
-2. opens the screen in its own background Chrome (the installed Google Chrome, driven over the DevTools protocol, no Playwright);
-3. waits for the network and the DOM to settle, measures it with the same engine, takes a screenshot and opens the side-by-side report.
+1. the app fetches the frame from the Figma REST API (image + auto-generated spec) in parallel while opening your screen in a visible Chrome tab (using the isolated `.chrome-profile`, driven over the DevTools protocol, no Playwright);
+2. you sign in (SSO/MFA), dismiss any prompts, or put the screen in the exact state you want to compare, then click **Continue & measure** in the app;
+3. the app resizes that open tab to the exact Figma frame dimensions, waits for layout and fonts to settle, measures the live DOM, captures the screenshot, and opens the side-by-side report (keeping your login session saved in `.chrome-profile`).
 
-If the screen needs a login or something stored in the browser (a role, a feature flag), click **Open the app's Chrome**, set it up in that window once, then click **Validate**. The window closes by itself and the profile (`.chrome-profile`, git-ignored) keeps the session. Set `CHROME_PATH` if Chrome is not in the default location.
+Already logged in? Toggle **Open browser tab before measuring** off to run directly in background headless Chrome without pausing (you can still click **Open app's Chrome** whenever you need to refresh a session). Set `CHROME_PATH` if Chrome is not in the default location.
 
 The auto-generated spec checks text styles (font, size, weight, line height, color, alignment and the copy itself) and, with **Also check boxes**, the boxes that draw something (size when fixed in Figma, background, border, radius and shadow). How it finds each element without hand-written selectors:
 

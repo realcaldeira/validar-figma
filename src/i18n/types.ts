@@ -51,6 +51,15 @@ export interface Translations {
       projectTip: string;
       containersTitle: string;
       containersDesc: string;
+      openTabTitle: string;
+      openTabDesc: string;
+      openTabRunBtn: string;
+      openingTab: string;
+      interactiveTitle: string;
+      interactiveDesc: string;
+      continueBtn: string;
+      continuingBtn: string;
+      cancelBtn: string;
     };
     title: string;
     subtitle: string;

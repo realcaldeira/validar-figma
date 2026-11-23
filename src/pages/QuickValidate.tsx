@@ -39,23 +39,32 @@ function writeStorage(key: string, value: string | null): void {
   }
 }
 
-function readLast(): { figmaUrl: string; screenUrl: string; containers: boolean; project: string } {
+function readLast(): { figmaUrl: string; screenUrl: string; containers: boolean; openTabBefore: boolean; project: string } {
   try {
     const parsed = JSON.parse(readStorage(LAST_STORAGE_KEY) || '{}') as {
       figmaUrl?: string;
       screenUrl?: string;
       containers?: boolean;
+      openTabBefore?: boolean;
       project?: string;
     };
     return {
       figmaUrl: parsed.figmaUrl || '',
       screenUrl: parsed.screenUrl || '',
       containers: Boolean(parsed.containers),
+      openTabBefore: parsed.openTabBefore ?? true,
       project: parsed.project || '',
     };
   } catch {
-    return { figmaUrl: '', screenUrl: '', containers: false, project: '' };
+    return { figmaUrl: '', screenUrl: '', containers: false, openTabBefore: true, project: '' };
   }
+}
+
+interface PendingSession {
+  sessionId: string;
+  targetUrl: string;
+  figmaName: string;
+  figmaFrame: { width: number; height: number };
 }
 
 /** Validação de um passo, sem IA: link do Figma + endereço da tela → relatório. */
@@ -69,6 +78,7 @@ export default function QuickValidate({
   const [figmaUrl, setFigmaUrl] = useState(() => readLast().figmaUrl);
   const [screenUrl, setScreenUrl] = useState(() => readLast().screenUrl);
   const [containers, setContainers] = useState(() => readLast().containers);
+  const [openTabBefore, setOpenTabBefore] = useState(() => readLast().openTabBefore);
   const [project, setProject] = useState(() => readLast().project);
   const [knownProjects, setKnownProjects] = useState<string[]>([]);
 
@@ -88,7 +98,8 @@ export default function QuickValidate({
   const [tokenInput, setTokenInput] = useState('');
   const [editingToken, setEditingToken] = useState(() => !readStorage(TOKEN_STORAGE_KEY));
   const [showTokenHelp, setShowTokenHelp] = useState(false);
-  const [busy, setBusy] = useState<'run' | 'login' | null>(null);
+  const [busy, setBusy] = useState<'run' | 'prepare' | 'continue' | 'login' | null>(null);
+  const [pendingSession, setPendingSession] = useState<PendingSession | null>(null);
   const [progressStep, setProgressStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -110,6 +121,10 @@ export default function QuickValidate({
 
   const run = async (e: FormEvent) => {
     e.preventDefault();
+    if (pendingSession) {
+      await continueInteractive();
+      return;
+    }
     setError(null);
     setInfo(null);
     if (!figmaUrl.trim() || !screenUrl.trim()) {
@@ -132,21 +147,43 @@ export default function QuickValidate({
       setEditingToken(false);
       setShowTokenHelp(false);
     }
-    writeStorage(LAST_STORAGE_KEY, JSON.stringify({ figmaUrl: figmaUrl.trim(), screenUrl: screenUrl.trim(), containers, project: project.trim() }));
+    writeStorage(
+      LAST_STORAGE_KEY,
+      JSON.stringify({ figmaUrl: figmaUrl.trim(), screenUrl: screenUrl.trim(), containers, openTabBefore, project: project.trim() }),
+    );
+    const payload = {
+      figmaUrl: figmaUrl.trim(),
+      url: screenUrl.trim(),
+      token,
+      precision,
+      includeContainers: containers,
+      project: project.trim() || undefined,
+    };
+
+    if (openTabBefore) {
+      setBusy('prepare');
+      try {
+        const res = await apiRequest<PendingSession>('/api/validate/prepare', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        setPendingSession(res);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setBusy(null);
+      }
+      return;
+    }
+
     setProgressStep(0);
     setBusy('run');
     try {
       const res = await apiRequest<{ id: string }>('/api/validate/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          figmaUrl: figmaUrl.trim(),
-          url: screenUrl.trim(),
-          token,
-          precision,
-          includeContainers: containers,
-          project: project.trim() || undefined,
-        }),
+        body: JSON.stringify(payload),
       });
       navigate(`/reports/${res.id}`);
     } catch (err) {
@@ -154,6 +191,40 @@ export default function QuickValidate({
     } finally {
       setBusy(null);
     }
+  };
+
+  const continueInteractive = async () => {
+    if (!pendingSession || busy !== null) return;
+    setError(null);
+    setInfo(null);
+    setBusy('continue');
+    try {
+      const res = await apiRequest<{ id: string }>('/api/validate/continue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: pendingSession.sessionId }),
+      });
+      setPendingSession(null);
+      navigate(`/reports/${res.id}`);
+    } catch (err) {
+      setPendingSession(null);
+      setError((err as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const cancelInteractive = async () => {
+    if (!pendingSession || busy !== null) return;
+    const id = pendingSession.sessionId;
+    setPendingSession(null);
+    setError(null);
+    setInfo(null);
+    await apiRequest('/api/validate/cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: id }),
+    }).catch(() => undefined);
   };
 
   const openLogin = async () => {
@@ -182,7 +253,7 @@ export default function QuickValidate({
 
   return (
     <form className="card quick-card" onSubmit={(e) => void run(e)}>
-      <div className={`quick-window-bar${busy === 'run' ? ' is-running' : ''}`}>
+      <div className={`quick-window-bar${busy === 'run' || busy === 'prepare' || busy === 'continue' ? ' is-running' : ''}`}>
         <div className="quick-window-left">
           <span className="quick-dots" aria-hidden="true">
             <span style={{ background: '#f24e1e' }} />
@@ -387,6 +458,23 @@ export default function QuickValidate({
 
           <p className="quick-precision-explain">{precisionExplain}</p>
 
+          <label className={`toggle-card${openTabBefore ? ' checked' : ''}`} htmlFor="quick-open-tab">
+            <span className="toggle-card-copy">
+              <strong>{q.openTabTitle}</strong>
+              <span>{q.openTabDesc}</span>
+            </span>
+            <span className="toggle-switch">
+              <input
+                id="quick-open-tab"
+                type="checkbox"
+                checked={openTabBefore}
+                disabled={busy !== null || pendingSession !== null}
+                onChange={(e) => setOpenTabBefore(e.target.checked)}
+              />
+              <span className="toggle-track" aria-hidden="true" />
+            </span>
+          </label>
+
           <label className={`toggle-card${containers ? ' checked' : ''}`} htmlFor="quick-containers">
             <span className="toggle-card-copy">
               <strong>{q.containersTitle}</strong>
@@ -397,6 +485,7 @@ export default function QuickValidate({
                 id="quick-containers"
                 type="checkbox"
                 checked={containers}
+                disabled={busy !== null || pendingSession !== null}
                 onChange={(e) => setContainers(e.target.checked)}
               />
               <span className="toggle-track" aria-hidden="true" />
@@ -404,34 +493,84 @@ export default function QuickValidate({
           </label>
         </div>
 
-        <div className="quick-actions">
-          <button type="submit" className="btn large" disabled={busy !== null}>
-            {busy === 'run' ? (
-              <>
-                <span className="spinner" aria-hidden="true" />
-                <span>{q.running}</span>
-              </>
-            ) : (
-              <>
-                <span>{q.runBtn}</span>
-                <IconArrowRight size={16} className="icon-nudge-right" />
-              </>
-            )}
-          </button>
-
-          <div className="quick-login-box">
-            <div className="quick-login-copy">
-              <IconLock size={14} style={{ marginTop: 2, flex: 'none' }} />
-              <div>
-                <strong>{q.loginHint}</strong>
-                <span>{q.loginSub}</span>
+        {pendingSession ? (
+          <div className="quick-interactive-box quick-feedback-pop" role="status" aria-live="polite">
+            <div className="quick-interactive-head">
+              <div className="quick-interactive-title">
+                <span className="pulse-dot" aria-hidden="true" />
+                <strong>{q.interactiveTitle}</strong>
               </div>
+              <span className="badge accent">
+                {pendingSession.figmaName} · {pendingSession.figmaFrame.width} × {pendingSession.figmaFrame.height}
+              </span>
             </div>
-            <button type="button" className="btn secondary small" disabled={busy !== null} onClick={() => void openLogin()}>
-              {q.loginBtn}
-            </button>
+            <p className="quick-interactive-desc">{q.interactiveDesc}</p>
+            <div className="quick-interactive-actions">
+              <button
+                type="button"
+                className="btn large"
+                disabled={busy !== null}
+                onClick={() => void continueInteractive()}
+              >
+                {busy === 'continue' ? (
+                  <>
+                    <span className="spinner" aria-hidden="true" />
+                    <span>{q.continuingBtn}</span>
+                  </>
+                ) : (
+                  <>
+                    <span>{q.continueBtn}</span>
+                    <IconArrowRight size={16} className="icon-nudge-right" />
+                  </>
+                )}
+              </button>
+              <button
+                type="button"
+                className="btn secondary"
+                disabled={busy !== null}
+                onClick={() => void cancelInteractive()}
+              >
+                {q.cancelBtn}
+              </button>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="quick-actions">
+            <button type="submit" className="btn large" disabled={busy !== null}>
+              {busy === 'run' ? (
+                <>
+                  <span className="spinner" aria-hidden="true" />
+                  <span>{q.running}</span>
+                </>
+              ) : busy === 'prepare' ? (
+                <>
+                  <span className="spinner" aria-hidden="true" />
+                  <span>{q.openingTab}</span>
+                </>
+              ) : (
+                <>
+                  <span>{openTabBefore ? q.openTabRunBtn : q.runBtn}</span>
+                  <IconArrowRight size={16} className="icon-nudge-right" />
+                </>
+              )}
+            </button>
+
+            {!openTabBefore && (
+              <div className="quick-login-box">
+                <div className="quick-login-copy">
+                  <IconLock size={14} style={{ marginTop: 2, flex: 'none' }} />
+                  <div>
+                    <strong>{q.loginHint}</strong>
+                    <span>{q.loginSub}</span>
+                  </div>
+                </div>
+                <button type="button" className="btn secondary small" disabled={busy !== null} onClick={() => void openLogin()}>
+                  {q.loginBtn}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {busy === 'run' && (
           <div className="quick-progress" role="status" aria-live="polite">
